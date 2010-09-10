@@ -9,5 +9,3 @@ lib/POE/Component/Server/PSGI.pm
 lib/Plack/Server/POE.pm
 t/release-pod-coverage.t
 t/release-pod-syntax.t
-t/streaming.t
-t/suite.t

@@ -4,37 +4,47 @@ use warnings;
 
 
 
-use ExtUtils::MakeMaker 6.11;
+use ExtUtils::MakeMaker 6.31;
 
 
 
 my %WriteMakefileArgs = (
-                       'test' => {
-                                   'TESTS' => 't/*.t'
-                                 },
-                       'NAME' => 'POE::Component::Server::PSGI',
-                       'DISTNAME' => 'POE-Component-Server-PSGI',
-                       'AUTHOR' => 'Paul Driver <frodwith@cpan.org>',
-                       'ABSTRACT' => 'PSGI Server implementation for POE',
-                       'EXE_FILES' => [],
-                       'VERSION' => '0.5',
-                       'LICENSE' => 'perl',
-                       'PREREQ_PM' => {
-                                        'namespace::autoclean' => '0',
-                                        'HTTP::Message::PSGI' => '0',
-                                        'Plack' => '0',
-                                        'POE::Component::Server::TCP' => '0',
-                                        'ExtUtils::MakeMaker' => '6.11',
-                                        'HTTP::Status' => '0',
-                                        'Test::More' => '0',
-                                        'POE::Filter::HTTP::Parser' => '0',
-                                        'POE' => '0'
-                                      }
-                     );
+  'ABSTRACT' => 'PSGI Server implementation for POE',
+  'AUTHOR' => 'Paul Driver <frodwith@cpan.org>',
+  'BUILD_REQUIRES' => {},
+  'CONFIGURE_REQUIRES' => {
+    'ExtUtils::MakeMaker' => '6.31'
+  },
+  'DISTNAME' => 'POE-Component-Server-PSGI',
+  'EXE_FILES' => [],
+  'LICENSE' => 'perl',
+  'NAME' => 'POE::Component::Server::PSGI',
+  'PREREQ_PM' => {
+    'Moose' => '0',
+    'POEx::Role::PSGIServer' => '0'
+  },
+  'VERSION' => '0.6',
+  'test' => {
+    'TESTS' => 't/*.t'
+  }
+);
 
 
-delete $WriteMakefileArgs{LICENSE}
-  unless eval { ExtUtils::MakeMaker->VERSION(6.31) };
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
 WriteMakefile(%WriteMakefileArgs);
 
